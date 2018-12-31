@@ -7,14 +7,12 @@ From a DynamoDB stream, replicates records to another table, optionally adding a
 @author Tim Malone <tim@timmalone.id.au>
 """
 
+import sys
 import logging
 
 from os import getenv
 from time import time
 from boto3 import client
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 # REQUIRED: The table name to copy records to.
 destination_table = getenv('DESTINATION_TABLE_NAME')
@@ -26,6 +24,9 @@ destination_region = getenv('DESTINATION_TABLE_REGION')
 # @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html
 ttl_attribute = getenv('DESTINATION_TABLE_TTL_ATTRIBUTE')
 ttl_seconds = getenv('TTL_SECONDS_FROM_NOW')
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(stream=sys.stdout, level='INFO')
 
 dynamodb = client('dynamodb', region_name=destination_region)
 
