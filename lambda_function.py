@@ -70,3 +70,11 @@ def lambda_handler(event, context):
 
   logger.info('Done.')
   return 'Done.'
+
+# The following lambda_handler line is NOT needed to run this as a Lambda function, but you can
+# uncomment it if you want to test the function locally. You'll need to replace 'id' with the name
+# of your table's primary key, and then run something like:
+#
+#   $ DESTINATION_TABLE_NAME=your-table-name python lambda_function.py
+#
+#lambda_handler({'Records':[{'dynamodb':{'NewImage':{'id':{'S':'1'}}}}]}, {})

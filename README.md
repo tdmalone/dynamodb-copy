@@ -43,7 +43,13 @@ I'll add a Terraform or Serverless config of sorts at some stage, but in the mea
 5. From the DynamoDB console on your source table, select the _Triggers_ tab, and click _Create trigger_, following the prompts
 6. Add a row to your source table and see how it goes!
 
-There's also another optional feature - data enrichment for each copied row. This is handled by `enrich.py`. The version here has my own custom data enrichments; feel free to use it as a template to make your own. You can also just leave the file out and everything will work without it.
+There's also another optional feature - data enrichment for each copied row. This is handled by [`enrich.py`](enrich.py). The version in this repo has my own custom data enrichments; feel free to use it as a template to make your own. You can also just leave the file out and everything will work without it.
+
+## Running Locally
+
+To test the function locally, ensure you have relevant [AWS credentials available](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html), uncomment the `lambda_handler()` line at the end of [`lambda_function.py`](lambda_function.py), and then run something similar to the following:
+
+    $ DESTINATION_TABLE_NAME=your-table-name python lambda_function.py
 
 ## Feedback, improvements, suggestions...
 
