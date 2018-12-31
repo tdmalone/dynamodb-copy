@@ -26,6 +26,10 @@ ttl_seconds = getenv('TTL_SECONDS_FROM_NOW')
 
 dynamodb = client('dynamodb', region_name=destination_region)
 
+# Allow us to enrich the data if we have the optional module available (enrich.py).
+try: from enrich import enrich
+except: pass
+
 def lambda_handler(event, context):
 
   new_ttl = round(float(ttl_seconds) + time(), 0)
@@ -40,6 +44,9 @@ def lambda_handler(event, context):
 
     if ttl_attribute and ttl_seconds:
       new_item[ttl_attribute] = {'N': str(new_ttl)}
+
+    if 'enrich' in globals():
+      new_item = enrich(new_item)
 
     dynamodb.put_item(TableName=destination_table, Item=new_item)
 

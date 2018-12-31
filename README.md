@@ -43,6 +43,8 @@ I'll add a Terraform or Serverless config of sorts at some stage, but in the mea
 5. From the DynamoDB console on your source table, select the _Triggers_ tab, and click _Create trigger_, following the prompts
 6. Add a row to your source table and see how it goes!
 
+There's also another optional feature - data enrichment for each copied row. This is handled by `enrich.py`. The version here has my own custom data enrichments; feel free to use it as a template to make your own. You can also just leave the file out and everything will work without it.
+
 ## Feedback, improvements, suggestions...
 
 ...are all welcome. [Log an issue](https://github.com/tdmalone/dynamodb-copy/issues/new) or send a PR.
