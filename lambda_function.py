@@ -16,11 +16,14 @@ from boto3 import client
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# Required variables.
+# REQUIRED: The table name to copy records to.
 destination_table = getenv('DESTINATION_TABLE_NAME')
+
+# The AWS region of the destination table - if not the same as where you're running this function.
 destination_region = getenv('DESTINATION_TABLE_REGION')
 
-# Optional variables - set *both* if you want to add a TTL attribute to the replicated records.
+# Set *both* of these if you want to add a TTL attribute to the replicated records.
+# @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html
 ttl_attribute = getenv('DESTINATION_TABLE_TTL_ATTRIBUTE')
 ttl_seconds = getenv('TTL_SECONDS_FROM_NOW')
 
@@ -32,17 +35,28 @@ except: pass
 
 def lambda_handler(event, context):
 
-  new_ttl = round(float(ttl_seconds) + time(), 0)
+  if destination_table is None:
+    raise ValueError('Please supply the destination table as the env var DESTINATION_TABLE_NAME')
+
+  if 'Records' not in event or len(event['Records']) == 0:
+    raise KeyError('No records are available to copy')
 
   for item in event['Records']:
+
+    if 'dynamodb' not in item:
+      logger.error('Record does not have DynamoDB data')
+      continue
+
     logger.debug(item['dynamodb'])
 
     if 'NewImage' not in item['dynamodb']:
+      logger.info('Record does not have a NewImage to process')
       continue
 
     new_item = item['dynamodb']['NewImage']
 
     if ttl_attribute and ttl_seconds:
+      new_ttl = round(float(ttl_seconds) + time(), 0)
       new_item[ttl_attribute] = {'N': str(new_ttl)}
 
     if 'enrich' in globals():
