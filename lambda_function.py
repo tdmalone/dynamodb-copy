@@ -25,8 +25,16 @@ destination_region = getenv('DESTINATION_TABLE_REGION')
 ttl_attribute = getenv('DESTINATION_TABLE_TTL_ATTRIBUTE')
 ttl_seconds = getenv('TTL_SECONDS_FROM_NOW')
 
+# @see https://docs.python.org/3/library/logging.html#logging-levels
+LOGGING_LEVEL = getenv('LOGGING_LEVEL', 'INFO')
+
+# Set up logging level, and stream stream to stdout if not running in Lambda.
+# (We don't want to change the basicConfig if we ARE running in Lambda).
 logger = logging.getLogger(__name__)
-logging.basicConfig(stream=sys.stdout, level='INFO')
+if getenv('AWS_EXECUTION_ENV') is None:
+  logging.basicConfig(stream=sys.stdout, level=LOGGING_LEVEL)
+else:
+  logger.setLevel(LOGGING_LEVEL)
 
 dynamodb = client('dynamodb', region_name=destination_region)
 
